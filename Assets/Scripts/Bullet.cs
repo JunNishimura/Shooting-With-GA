@@ -5,7 +5,7 @@ using UnityEngine;
 // Individualの実体
 public class Bullet : MonoBehaviour
 {
-    public Vector3 finalPos;
+    private Vector3 finalPos;
 
     private Vector3[] path;
     private Rigidbody rb;
@@ -65,7 +65,23 @@ public class Bullet : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeAll;
         finalPos = this.transform.position;
         isStopRunning = true;
-        // this.gameObject.SetActive(false); // 画面から消す
+        // this.gameObject.SetActive(false); 
+    }
+
+    // calculate fitness based on the distance to the target
+    public float calculateFitness() 
+    {
+        // fitness is the distance between final position and target position
+        float fitness = Vector3.Distance(finalPos, Simulation.Target.transform.position);
+
+        // The faster the bullet reaches the target, the higher the fitness is
+        int remainingTime = Population.LIFESPAN - nowLife;
+        if (isReachedTarget && remainingTime > 0) 
+        {
+            fitness /= remainingTime;
+        }
+
+        return fitness;
     }
 
     public void Fire(Vector3[] _path, int _id) 
