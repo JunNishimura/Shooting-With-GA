@@ -5,16 +5,16 @@ using UnityEngine;
 public class Individual
 {
     public Vector3[] chrom { get; private set; }
-    public float fitness { get; private set; }
+    public float fitness { get; set; }
 
     public Individual()
     {
         chrom = new Vector3[Population.LIFESPAN];
         for (int i = 0; i < Population.LIFESPAN; i++) 
         {
-            // 球座標
-            // 半径1の球体上の1点をとる。(objectが向いている方向の半分の球体上から)
-            // 参照: https://ja.wikipedia.org/wiki/%E7%90%83%E9%9D%A2%E5%BA%A7%E6%A8%99%E7%B3%BB
+            // Spherical coordinate system
+            // pick one point from the 1/4 size sphere (1/4 is the part which the bullet is heading)
+            // reference: https://ja.wikipedia.org/wiki/%E7%90%83%E9%9D%A2%E5%BA%A7%E6%A8%99%E7%B3%BB
             float theta = Random.Range(0f, Mathf.PI/2);
             float phi = Random.Range(0, Mathf.PI);
             chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
@@ -24,16 +24,8 @@ public class Individual
         }
     }
 
-    public void calcFitness() 
-    {
-        // fitness = Vector3.Distance();
-
-        // if (isReachedTarget && LifeSpan - nowLife > 0)  
-        // {
-        //     fitness /= nowLife;
-        // }
-    }
-
+    /// <param name="p1">parent 1</param>
+    /// <param name="p2">parent 2</param>
     public void Crossover(Individual p1, Individual p2) 
     {
         OnePointCrossover(p1, p2);
@@ -58,8 +50,6 @@ public class Individual
         {
             if (Random.Range(0.0f, 1.0f) < Population.MUTATEPROB) 
             {
-                // 球座標
-                // 半径1の球体上の1点をとる。(objectが向いている方向の半分の球体上から)
                 float theta = Random.Range(0f, Mathf.PI);
                 float phi = Random.Range(0f, Mathf.PI);
                 chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
