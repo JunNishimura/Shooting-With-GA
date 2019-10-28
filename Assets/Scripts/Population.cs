@@ -7,6 +7,7 @@ public class Population
     public static int LIFESPAN = 120;
     public static int GENMAX = 100; // 世代数
     public static float MUTATEPROB = 0.2f; // 突然変異率
+    public Bullet[] bulletObjects;
     public Individual[] curIndividuals;
     private Individual[] nextIndividuals;
     private float[] trFit;
@@ -15,6 +16,7 @@ public class Population
 
     public Population()
     {
+        bulletObjects   = new Bullet[Simulation.BulletNum];
         curIndividuals  = new Individual[Simulation.BulletNum];
         nextIndividuals = new Individual[Simulation.BulletNum];
         trFit = new float[Simulation.BulletNum];
@@ -26,11 +28,11 @@ public class Population
         }
     }
 
+    // alternate generation
     // public void alternate() 
     // {
-    //     // 適応度を昇順に並び替える
-    //     quickSort(0, Simulation.BulletNum-1); 
-    //     Debug.Log($"第{Simulation.curGeneration-1}世代 最良適応度: {this.curIndividuals[0].fitness}");
+    //     // evaluate the previous generation
+    //     Evaluate();
 
     //     // 前世代にTargetに到達した数を現世代のエリート数とする
     //     elite = 2;
@@ -44,7 +46,7 @@ public class Population
     //     // エリートは無条件に保存する
     //     for (int i = 0; i < elite; i++)
     //     {
-    //         for (int j = 0; j < Rocket.LIFESPAN; j++)
+    //         for (int j = 0; j < LIFESPAN; j++)
     //         {
     //             nextIndividuals[i].chrom[j] = curIndividuals[i].chrom[j];
     //         }
@@ -89,16 +91,10 @@ public class Population
     //     }
 
     //     // 次世代に受け継ぐ
-    //     Rocket[] tmp = new Rocket[Simulation.BulletNum];
+    //     Individual[] tmp = new Individual[Simulation.BulletNum];
     //     curIndividuals.CopyTo(tmp, 0);
     //     nextIndividuals.CopyTo(curIndividuals, 0);
     //     tmp.CopyTo(nextIndividuals, 0);
-
-    //     // reset all rockets 
-    //     for (int i = 0; i < Simulation.BulletNum; i++) 
-    //     {
-    //         curIndividuals[i].Reset();
-    //     }
     // }
 
     // ルーレット選択
@@ -131,6 +127,18 @@ public class Population
             r -= prob;
         }
         return rank-1;
+    }
+
+    // Evaluate the trial for the previous generation
+    private void Evaluate()
+    {
+        for (int i = 0; i < Simulation.BulletNum; i++) 
+        {
+            curIndividuals[i].fitness = bulletObjects[i].calculateFitness();
+        }
+        // sort curIndividuals based on the fitness calculated above
+        quickSort(0, Simulation.BulletNum-1);
+        Debug.Log($"Generation {Simulation.curGeneration-1}: best fitness is {this.curIndividuals[0].fitness}");
     }
 
     // クイックソート
