@@ -6,22 +6,18 @@ public class Simulation : MonoBehaviour
 {
     public static int curGeneration = 1;
     public static int BulletNum = 30;
-    public static GameObject[] bul_objects;
     public GameObject FirePos;
     public GameObject Prefab;
     public GameObject TowerTop;
 
     private Population population;
     private int bul_ID;
-    // private float rotTimer;
     private float nextFire;
     private float fireRate;
 
     private void Awake() 
     {
-        bul_objects = new GameObject[BulletNum];
         bul_ID = 0;
-        // rotTimer = 0.0f;
         fireRate = 1f;
         nextFire = fireRate;
 
@@ -53,9 +49,9 @@ public class Simulation : MonoBehaviour
             nextFire = Time.time + fireRate;
             
             // instantiate bullet
-            bul_objects[bul_ID] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)) as GameObject;
+            population.bulletObjects[bul_ID] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)) as GameObject;
             // pass the path which this bullet will follow
-            bul_objects[bul_ID].GetComponent<Bullet>().Fire(population.curIndividuals[bul_ID].chrom, bul_ID);
+            population.bulletObjects[bul_ID].GetComponent<Bullet>().Fire(population.curIndividuals[bul_ID].chrom, bul_ID);
 
             bul_ID++;
         }
@@ -70,8 +66,6 @@ public class Simulation : MonoBehaviour
             Debug.Log("ゲーム終了");
             return;
         }
-
-
         // population.alternate();
 
         // 現世代終了時にオブジェクトを削除
