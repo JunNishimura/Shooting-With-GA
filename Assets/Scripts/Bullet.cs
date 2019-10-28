@@ -5,8 +5,8 @@ using UnityEngine;
 // Individualの実体
 public class Bullet : MonoBehaviour
 {
+    public bool isReachedTarget;
     private Vector3 finalPos;
-
     private Vector3[] path;
     private Rigidbody rb;
     private Vector3 acceleration;
@@ -15,7 +15,6 @@ public class Bullet : MonoBehaviour
     private float speed;
     private float y_diff;
     private int nowLife;
-    private bool isReachedTarget;
     private bool isStopRunning;
 
     private void Awake()
@@ -75,18 +74,24 @@ public class Bullet : MonoBehaviour
         float fitness = Vector3.Distance(finalPos, Simulation.Target.transform.position);
 
         // The faster the bullet reaches the target, the higher the fitness is
-        int remainingTime = Population.LIFESPAN - nowLife;
-        if (isReachedTarget && remainingTime > 0) 
+        int remainingLife = Population.LIFESPAN - nowLife;
+        if (isReachedTarget && remainingLife > 0) 
         {
-            fitness /= remainingTime;
+            fitness /= remainingLife;
         }
 
         return fitness;
     }
 
-    public void Fire(Vector3[] _path, int _id) 
+    /// <param name="path">the path which the bullet will follow</param>
+    public void Fire(Vector3[] path, int _id) 
     {
-        _path.CopyTo(this.path, 0); // passing value, not reference
+        path.CopyTo(this.path, 0); // passing value, not reference
         this.uniqueID = _id;
+    }
+
+    public void DestroyMyself() 
+    {
+        Destroy(this.gameObject);
     }
 }
