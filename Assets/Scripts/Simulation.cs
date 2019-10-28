@@ -6,6 +6,7 @@ public class Simulation : MonoBehaviour
 {
     public static int curGeneration = 1;
     public static int BulletNum = 30;
+    public static GameObject Target;
     public GameObject FirePos;
     public GameObject Prefab;
     public GameObject TowerTop;
@@ -20,6 +21,7 @@ public class Simulation : MonoBehaviour
         bul_ID = 0;
         fireRate = 1f;
         nextFire = fireRate;
+        Target = GameObject.FindWithTag("Target");
 
         population = new Population();
     }
@@ -49,9 +51,9 @@ public class Simulation : MonoBehaviour
             nextFire = Time.time + fireRate;
             
             // instantiate bullet
-            population.bulletObjects[bul_ID] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)) as GameObject;
+            population.bulletObjects[bul_ID] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)).GetComponent<Bullet>();
             // pass the path which this bullet will follow
-            population.bulletObjects[bul_ID].GetComponent<Bullet>().Fire(population.curIndividuals[bul_ID].chrom, bul_ID);
+            population.bulletObjects[bul_ID].Fire(population.curIndividuals[bul_ID].chrom, bul_ID);
 
             bul_ID++;
         }
@@ -61,17 +63,13 @@ public class Simulation : MonoBehaviour
     {
         curGeneration ++;
         
-        if (curGeneration == Population.GENMAX) 
+        if (curGeneration >= Population.GENMAX) 
         {
-            Debug.Log("ゲーム終了");
+            Debug.Log("Finish Evolution");
             return;
         }
-        // population.alternate();
 
-        // 現世代終了時にオブジェクトを削除
-        for (int i = 0; i < BulletNum; i++) 
-        {
-            Destroy(bul_objects[i]);
-        }
+        population.alternate();
+        bul_ID = 0;
     }
 }

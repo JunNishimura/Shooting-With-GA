@@ -5,14 +5,15 @@ using UnityEngine;
 public class Population
 {
     public static int LIFESPAN = 120;
-    public static int GENMAX = 100; // 世代数
-    public static float MUTATEPROB = 0.2f; // 突然変異率
+    public static int GENMAX = 100; // maximum number of generation
+    public static float MUTATEPROB = 0.2f; // probabilty which the mutation happens
     public Bullet[] bulletObjects;
     public Individual[] curIndividuals;
     private Individual[] nextIndividuals;
-    private float[] trFit;
+    private float[] trFit; // traversed fitness. 
+    private float totalTrFitness;
     private int elite = 0; 
-    private int superElite = 0; // elite which reached the target at last game
+    private int superElite = 0; // number of elites which reached the target for the previous generation
 
     public Population()
     {
@@ -29,89 +30,96 @@ public class Population
     }
 
     // alternate generation
-    // public void alternate() 
-    // {
-    //     // evaluate the previous generation
-    //     Evaluate();
+    public void alternate() 
+    {
+        // evaluate the previous generation
+        Evaluate();
 
-    //     // 前世代にTargetに到達した数を現世代のエリート数とする
-    //     elite = 2;
-    //     superElite = 0;
-    //     for (int i = 0; i < Simulation.BulletNum; i++) 
-    //     {
-    //         if (curIndividuals[i].isReachedTarget) superElite++;
-    //     }
-    //     elite = Mathf.Max(elite+superElite, 5); // elite上限5
+        elite = 2; // minimum number of elites is 2
+        superElite = 0;
+        for (int i = 0; i < Simulation.BulletNum; i++) 
+        {
+            if (bulletObjects[i].isReachedTarget) superElite++;
+        }
+        elite = Mathf.Max(elite+superElite, 5); // maximum number of elites is 5
         
-    //     // エリートは無条件に保存する
-    //     for (int i = 0; i < elite; i++)
-    //     {
-    //         for (int j = 0; j < LIFESPAN; j++)
-    //         {
-    //             nextIndividuals[i].chrom[j] = curIndividuals[i].chrom[j];
-    //         }
-    //     }
+        // keep elites for the next generation
+        for (int i = 0; i < elite; i++)
+        {
+            for (int j = 0; j < LIFESPAN; j++)
+            {
+                nextIndividuals[i].chrom[j] = curIndividuals[i].chrom[j];
+            }
+        }
 
-    //     float totalFitness = 0;
-    //     float worstFitness = curIndividuals[Simulation.BulletNum-1].fitness; // ソート後、配列最後尾に最悪適応度が格納されている
-    //     for (int i = 0; i < Simulation.BulletNum; i++) 
-    //     {
-    //         trFit[i] = (worstFitness - curIndividuals[i].fitness + 0.001f) / worstFitness;
-    //         trFit[i] = Mathf.Pow(trFit[i], 4.0f);
-    //         totalFitness += trFit[i];
-    //     }
+        // calculate traversed fitness for each object
+        totalTrFitness = 0;
+        float worstFitness = curIndividuals[Simulation.BulletNum-1].fitness; // after sorting, worst fitness is stored at the tail of array
+        for (int i = 0; i < Simulation.BulletNum; i++) 
+        {
+            // add 0.001f to avoid the case which trFit[i] is 0 
+            // leave a bit possibility being chosen even for the worst fitness object
+            trFit[i] = (worstFitness - curIndividuals[i].fitness + 0.001f) / worstFitness;
+            trFit[i] = Mathf.Pow(trFit[i], 4.0f); // this helps that better fitness is more likely being picked by selection
+            totalTrFitness += trFit[i];
+        }
 
-    //     // 交叉
-    //     for (int i = elite; i < Simulation.BulletNum; i++) 
-    //     {
-    //         int parent = rouletteSelection(totalFitness);
-    //         int r = Random.Range(0, 3);
-    //         if (r == 0) 
-    //         {
-    //             nextIndividuals[i].prevFitness = trFit[i] * trFit[parent];
-    //             nextIndividuals[i].Crossover(curIndividuals[i], curIndividuals[parent]);
-    //         }
-    //         else if (r == 1)
-    //         {
-    //             nextIndividuals[i].prevFitness = trFit[i] * trFit[parent];
-    //             nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[i]);
-    //         }
-    //         else 
-    //         {
-    //             int anotherParent = rouletteSelection(totalFitness);
-    //             nextIndividuals[i].prevFitness = trFit[anotherParent] * trFit[parent];
-    //             nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[anotherParent]);
-    //         }
-    //     }
+        // crossover
+        for (int i = elite; i < Simulation.BulletNum; i++) 
+        {
+            // here we use roulette selection
+            int parent = rouletteSelection();
+            // have some variation for selecting parents for the crossover
+            int r = Random.Range(0, 3);
+            switch (r)
+            {
+                case 0:
+                    nextIndividuals[i].Crossover(curIndividuals[i], curIndividuals[parent]);
+                    break;
+                case 1:
+                    nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[i]);
+                    break;
+                default:
+                    int anotherParent = rouletteSelection();
+                    nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[anotherParent]);
+                    break;
+            }
+        }
 
-    //     // 突然変異
-    //     for (int i = superElite; i < Simulation.BulletNum; i++) 
-    //     {
-    //         nextIndividuals[i].Mutate();
-    //     }
+        // mutation
+        for (int i = superElite; i < Simulation.BulletNum; i++) 
+        {
+            nextIndividuals[i].Mutate();
+        }
 
-    //     // 次世代に受け継ぐ
-    //     Individual[] tmp = new Individual[Simulation.BulletNum];
-    //     curIndividuals.CopyTo(tmp, 0);
-    //     nextIndividuals.CopyTo(curIndividuals, 0);
-    //     tmp.CopyTo(nextIndividuals, 0);
-    // }
+        // bring the next generation to the current generation
+        Individual[] tmp = new Individual[Simulation.BulletNum];
+        curIndividuals.CopyTo(tmp, 0);
+        nextIndividuals.CopyTo(curIndividuals, 0);
+        tmp.CopyTo(nextIndividuals, 0);
 
-    // ルーレット選択
-    private int rouletteSelection(float totalFitness) 
+        // destroy all bullet objects
+        for (int i = 0; i < Simulation.BulletNum; i++) 
+        {
+            bulletObjects[i].DestroyMyself();
+        }
+    }
+
+    // roulette selection
+    private int rouletteSelection() 
     {
         float rand = Random.Range(0.0f, 1.0f);
         int rank = 1;
         for (; rank <= Simulation.BulletNum; rank++) 
         {
-            float prob = trFit[rank-1] / totalFitness;
+            float prob = trFit[rank-1] / totalTrFitness;
             if (rand <= prob) break;
             rand -= prob;
         }
         return rank-1;
     }
 
-    // 確率に基づくランキング選択
+    // ranking selection based on the probability
     private int rankingSelection() 
     {
         int rn = Simulation.BulletNum;
@@ -121,7 +129,7 @@ public class Population
         int rank = 1;
         for (; rank <= rn; rank++) 
         {
-            // 個体群は適応度に基づいて昇順にソートされているから、ランキングが高い（小さい）方が選ばれやすい
+            // The higher the rank is, the more it's likely picked as parent
             float prob = (float)(rn - (rank-1)) / denom;
             if (r <= prob) break;
             r -= prob;
