@@ -17,7 +17,7 @@ public class Individual
             // reference: https://ja.wikipedia.org/wiki/%E7%90%83%E9%9D%A2%E5%BA%A7%E6%A8%99%E7%B3%BB
             // ATTENTION: In unity, y direction of vector is upward, so Mathf.Cos(theta) is y value.
             float theta = Random.Range(Mathf.PI/6, Mathf.PI/2);
-            float phi = Random.Range(Mathf.PI/6, Mathf.PI-Mathf.PI/6);
+            float phi = Random.Range(0, Mathf.PI);
             chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
                                 Mathf.Cos(theta),
                                 Mathf.Sin(theta) * Mathf.Sin(phi));
@@ -51,8 +51,8 @@ public class Individual
         {
             if (Random.Range(0.0f, 1.0f) < Population.MUTATEPROB) 
             {
-                float theta = Random.Range(0f, Mathf.PI/4);
-                float phi = Random.Range(Mathf.PI/6, Mathf.PI-Mathf.PI/6);
+                float theta = Random.Range(Mathf.PI/4, Mathf.PI/2);
+                float phi = Random.Range(0f, Mathf.PI);
                 chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
                                     Mathf.Cos(theta),
                                     Mathf.Sin(theta) * Mathf.Sin(phi));
