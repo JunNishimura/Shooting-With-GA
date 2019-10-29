@@ -15,11 +15,12 @@ public class Individual
             // Spherical coordinate system
             // pick one point from the 1/4 size sphere (1/4 is the part which the bullet is heading)
             // reference: https://ja.wikipedia.org/wiki/%E7%90%83%E9%9D%A2%E5%BA%A7%E6%A8%99%E7%B3%BB
-            float theta = Random.Range(0f, Mathf.PI/2);
-            float phi = Random.Range(0, Mathf.PI);
+            // ATTENTION: In unity, y direction of vector is upward, so Mathf.Cos(theta) is y value.
+            float theta = Random.Range(Mathf.PI/6, Mathf.PI/2);
+            float phi = Random.Range(Mathf.PI/6, Mathf.PI-Mathf.PI/6);
             chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
-                                Mathf.Sin(theta) * Mathf.Sin(phi),
-                                Mathf.Cos(theta));
+                                Mathf.Cos(theta),
+                                Mathf.Sin(theta) * Mathf.Sin(phi));
             fitness = 0.0f;
         }
     }
@@ -50,11 +51,11 @@ public class Individual
         {
             if (Random.Range(0.0f, 1.0f) < Population.MUTATEPROB) 
             {
-                float theta = Random.Range(0f, Mathf.PI);
-                float phi = Random.Range(0f, Mathf.PI);
+                float theta = Random.Range(0f, Mathf.PI/4);
+                float phi = Random.Range(Mathf.PI/6, Mathf.PI-Mathf.PI/6);
                 chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
-                                    Mathf.Sin(theta) * Mathf.Sin(phi),
-                                    Mathf.Cos(theta));
+                                    Mathf.Cos(theta),
+                                    Mathf.Sin(theta) * Mathf.Sin(phi));
             }
         }
     }
