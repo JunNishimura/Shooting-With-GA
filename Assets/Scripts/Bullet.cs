@@ -10,6 +10,7 @@ public class Bullet : MonoBehaviour
     private Rigidbody rb;
     private Vector3 acceleration;
     private Vector3 velocity;
+    private GameObject explosion;
     private int uniqueID;
     private float speed;
     private float y_diff;
@@ -20,6 +21,8 @@ public class Bullet : MonoBehaviour
     {
         path = new Vector3[Population.LIFESPAN];
         rb = this.GetComponent<Rigidbody>();
+        explosion = this.transform.Find("explosion").gameObject;
+        explosion.SetActive(false);
 
         speed = 0.5f;
         nowLife = 0;
@@ -63,7 +66,10 @@ public class Bullet : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeAll;
         finalPos = this.transform.position;
         isStopRunning = true;
-        // this.gameObject.SetActive(false); 
+        if (! isReachedTarget)
+        {
+            StartCoroutine("Explode");
+        }
     }
 
     // calculate fitness based on the distance to the target
@@ -92,5 +98,12 @@ public class Bullet : MonoBehaviour
     public void DestroyMyself() 
     {
         Destroy(this.gameObject);
+    }
+
+    private IEnumerator Explode() 
+    {
+        explosion.SetActive(true);
+        yield return new WaitForSeconds(0.25f);
+        this.gameObject.SetActive(false);
     }
 }
