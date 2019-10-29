@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Simulation : MonoBehaviour
 {
+
     public static int curGeneration = 1;
     public static int BulletNum = 30;
+    public static float BestFitnessEver = Mathf.Infinity;
     public static GameObject Target;
     public GameObject FirePos;
     public GameObject Prefab;

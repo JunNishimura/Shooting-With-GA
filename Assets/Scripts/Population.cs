@@ -13,7 +13,6 @@ public class Population
     private float[] trFit; // traversed fitness. 
     private float totalTrFitness;
     private int elite = 0; 
-    private int superElite = 0; // number of elites which reached the target for the previous generation
 
     public Population()
     {
@@ -36,12 +35,12 @@ public class Population
         Evaluate();
 
         elite = 2; // minimum number of elites is 2
-        superElite = 0;
+        Simulation.SurvivedCount = 0;
         for (int i = 0; i < Simulation.BulletNum; i++) 
         {
-            if (bulletObjects[i].isReachedTarget) superElite++;
+            if (bulletObjects[i].isReachedTarget) Simulation.SurvivedCount++;
         }
-        elite = Mathf.Max(elite+superElite, 5); // maximum number of elites is 5
+        elite = Mathf.Max(elite+Simulation.SurvivedCount, 5); // maximum number of elites is 5
         
         // keep elites for the next generation
         for (int i = 0; i < elite; i++)
@@ -87,7 +86,7 @@ public class Population
         }
 
         // mutation
-        for (int i = superElite; i < Simulation.BulletNum; i++) 
+        for (int i = Simulation.SurvivedCount; i < Simulation.BulletNum; i++) 
         {
             nextIndividuals[i].Mutate();
         }
@@ -146,10 +145,15 @@ public class Population
         }
         // sort curIndividuals based on the fitness calculated above
         quickSort(0, Simulation.BulletNum-1);
-        Debug.Log($"Generation {Simulation.curGeneration-1}: best fitness is {this.curIndividuals[0].fitness}");
+        float currentBestFitness = this.curIndividuals[0].fitness;
+        if (currentBestFitness < Simulation.BestFitnessEver)
+        {
+            Simulation.BestFitnessEver = currentBestFitness;
+        }
+        Debug.Log($"Generation {Simulation.curGeneration-1}: best fitness is {currentBestFitness}");
     }
 
-    // クイックソート
+    // quick sort
     private void quickSort(int lb, int ub) 
     {
         if (lb < ub) 
