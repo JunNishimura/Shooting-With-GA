@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Individualの実体
 public class Bullet : MonoBehaviour
 {
-    public bool isReachedTarget;
+    public bool isReachedTarget { get; private set;}
     private Vector3 finalPos;
     private Vector3[] path;
     private Rigidbody rb;
