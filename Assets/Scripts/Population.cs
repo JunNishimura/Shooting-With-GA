@@ -150,7 +150,7 @@ public class Population
         {
             Simulation.BestFitnessEver = currentBestFitness;
         }
-        Debug.Log($"Generation {Simulation.curGeneration-1}: best fitness is {currentBestFitness}");
+        Debug.Log($"Generation {Simulation.curGeneration}: best fitness is {currentBestFitness}");
     }
 
     // quick sort

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Simulation : MonoBehaviour
 {
-
     public static int curGeneration = 1;
     public static int BulletNum = 30;
+    public static int SurvivedCount = 0;
     public static float BestFitnessEver = Mathf.Infinity;
     public static GameObject Target;
     public GameObject FirePos;
@@ -30,7 +30,7 @@ public class Simulation : MonoBehaviour
 
     private void Update() 
     {
-        if (bul_ID == BulletNum) 
+        if (bul_ID == BulletNum)
         {
             Evolution();
         }
@@ -63,15 +63,13 @@ public class Simulation : MonoBehaviour
 
     private void Evolution() 
     {
-        curGeneration ++;
+        population.alternate();
         
-        if (curGeneration >= Population.GENMAX) 
+        if (++curGeneration >= Population.GENMAX) 
         {
             Debug.Log("Finish Evolution");
-            return;
+            Application.Quit();
         }
-
-        population.alternate();
         bul_ID = 0;
     }
 }
