@@ -5,23 +5,25 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public bool isReachedTarget { get; private set;}
-    private Vector3 finalPos;
-    private Vector3[] path;
+    private AudioSource audioSource;
     private Rigidbody rb;
+    private Vector3[] path;
+    private Vector3 finalPos;
     private Vector3 acceleration;
     private Vector3 velocity;
     private GameObject explosion;
     private GameObject target;
     private int uniqueID;
+    private int nowLife;
     private float speed;
     private float y_diff;
-    private int nowLife;
     private bool isStopRunning;
 
     private void Awake()
     {
-        path = new Vector3[Population.LIFESPAN];
+        audioSource = this.GetComponent<AudioSource>();
         rb = this.GetComponent<Rigidbody>();
+        path = new Vector3[Population.LIFESPAN];
         explosion = this.transform.Find("explosion").gameObject;
         explosion.SetActive(false);
         target = GameObject.FindWithTag("Target");
@@ -105,7 +107,8 @@ public class Bullet : MonoBehaviour
     private IEnumerator Explode() 
     {
         explosion.SetActive(true);
-        yield return new WaitForSeconds(0.25f);
+        audioSource.Play();
+        yield return new WaitForSeconds(1f);
         this.gameObject.SetActive(false);
     }
 }
