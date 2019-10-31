@@ -11,6 +11,7 @@ public class Bullet : MonoBehaviour
     private Vector3 acceleration;
     private Vector3 velocity;
     private GameObject explosion;
+    private GameObject target;
     private int uniqueID;
     private float speed;
     private float y_diff;
@@ -23,6 +24,7 @@ public class Bullet : MonoBehaviour
         rb = this.GetComponent<Rigidbody>();
         explosion = this.transform.Find("explosion").gameObject;
         explosion.SetActive(false);
+        target = GameObject.FindWithTag("Target");
 
         speed = 0.5f;
         nowLife = 0;
@@ -76,7 +78,7 @@ public class Bullet : MonoBehaviour
     public float calculateFitness() 
     {
         // fitness is the distance between final position and target position
-        float fitness = Vector3.Distance(finalPos, Simulation.Target.transform.position);
+        float fitness = Vector3.Distance(finalPos, target.transform.position);
 
         // The faster the bullet reaches the target, the higher the fitness is
         int remainingLife = Population.LIFESPAN - nowLife;

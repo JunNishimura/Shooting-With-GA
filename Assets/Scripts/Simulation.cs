@@ -8,7 +8,6 @@ public class Simulation : MonoBehaviour
     public static int BulletNum = 30;
     public static int SurvivedCount = 0;
     public static float BestFitnessEver = Mathf.Infinity;
-    public static GameObject Target;
     public GameObject FirePos;
     public GameObject Prefab;
     public GameObject TowerTop;
@@ -23,7 +22,6 @@ public class Simulation : MonoBehaviour
         bul_ID = 0;
         fireRate = 1f;
         nextFire = fireRate;
-        Target = GameObject.FindWithTag("Target");
 
         population = new Population();
     }
