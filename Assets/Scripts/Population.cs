@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Population
 {
-    public static int LIFESPAN = 120;
+    public static int LIFESPAN = 200;
     public static int GENMAX = 100; // maximum number of generation
     public static float MUTATEPROB = 0.2f; // probabilty which the mutation happens
     public Bullet[] bulletObjects;
