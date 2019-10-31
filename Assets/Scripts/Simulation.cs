@@ -23,7 +23,7 @@ public class Simulation : MonoBehaviour
         fireRate = 1f;
         nextFire = fireRate;
 
-        population = new Population();
+        population = new Population(Vector3.Angle(Vector3.right, FirePos.transform.right));
     }
 
     private void Update() 
