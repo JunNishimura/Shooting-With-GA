@@ -70,10 +70,7 @@ public class Bullet : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeAll;
         finalPos = this.transform.position;
         isStopRunning = true;
-        if (! isReachedTarget)
-        {
-            StartCoroutine("Explode");
-        }
+        StartCoroutine("Explode");
     }
 
     // calculate fitness based on the distance to the target
