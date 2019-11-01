@@ -7,9 +7,13 @@ public class Individual
     public Vector3[] chrom { get; private set; }
     public float fitness { get; set; }
 
-    public Individual()
+    private float compRadAngle;
+
+    /// <param name="complementAngle">// Complement the difference in angle between world x axis and local x axis</param>
+    public Individual(float complementAngle)
     {
         chrom = new Vector3[Population.LIFESPAN];
+        compRadAngle = complementAngle * Mathf.Deg2Rad;
         for (int i = 0; i < Population.LIFESPAN; i++) 
         {
             // Spherical coordinate system
@@ -17,7 +21,7 @@ public class Individual
             // reference: https://ja.wikipedia.org/wiki/%E7%90%83%E9%9D%A2%E5%BA%A7%E6%A8%99%E7%B3%BB
             // ATTENTION: In unity, y direction of vector is upward, so Mathf.Cos(theta) is y value.
             float theta = Random.Range(Mathf.PI/6, Mathf.PI/2);
-            float phi = Random.Range(0, Mathf.PI);
+            float phi = Random.Range(0, Mathf.PI) + compRadAngle;
             chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
                                 Mathf.Cos(theta),
                                 Mathf.Sin(theta) * Mathf.Sin(phi));
@@ -52,7 +56,7 @@ public class Individual
             if (Random.Range(0.0f, 1.0f) < Population.MUTATEPROB) 
             {
                 float theta = Random.Range(Mathf.PI/4, Mathf.PI/2);
-                float phi = Random.Range(0f, Mathf.PI);
+                float phi = Random.Range(0f, Mathf.PI) + compRadAngle;
                 chrom[i] = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi),
                                     Mathf.Cos(theta),
                                     Mathf.Sin(theta) * Mathf.Sin(phi));

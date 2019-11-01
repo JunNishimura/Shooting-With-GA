@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Population
 {
-    public static int LIFESPAN = 120;
+    public static int LIFESPAN = 200;
     public static int GENMAX = 100; // maximum number of generation
     public static float MUTATEPROB = 0.2f; // probabilty which the mutation happens
     public Bullet[] bulletObjects;
@@ -14,7 +14,7 @@ public class Population
     private float totalTrFitness;
     private int elite = 0; 
 
-    public Population()
+    public Population(float complementAngle)
     {
         bulletObjects   = new Bullet[Simulation.BulletNum];
         curIndividuals  = new Individual[Simulation.BulletNum];
@@ -23,7 +23,7 @@ public class Population
 
         for (int i = 0; i < Simulation.BulletNum; i++)
         {
-            curIndividuals[i] = new Individual();
+            curIndividuals[i] = new Individual(complementAngle);
             curIndividuals.CopyTo(nextIndividuals, 0);
         }
     }
