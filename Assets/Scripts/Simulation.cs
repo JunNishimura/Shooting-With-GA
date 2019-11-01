@@ -18,6 +18,8 @@ public class Simulation : MonoBehaviour
     public GameObject FirePos;
     public GameObject Prefab;
     public GameObject TowerTop;
+    public GameObject TerminalTextObject;
+
     private UIManager UIManager;
     private Population population;
     private AudioSource audioSource;
@@ -26,19 +28,18 @@ public class Simulation : MonoBehaviour
     private float nextFire;
     private float fireRate;
 
-
     // variables for character animation
-    private bool isActiveUI;
     [SerializeField][Range(0.001f, 0.3f)]
-    private float charDisplayInterval = 0.05f;
+    private float charDisplayInterval = 0.05f; // interval to dispaly next character
+    private bool isActiveUI; // make this true when displaying UI
+    private bool isTextMove; // TerminalTextObject has to move upward to show all texts
     private string[] sentences;
     private string wholeSentence;
-    private string nowSentence;
-    private int nowSentenceNum;
-    private int lastUpdateCharNum;
+    private string nowSentence; // one line sentence
+    private int nowSentenceNum; // index for sentences
+    private int lastCharIndex; // index for nowSentence
     private float beginTime;
     private float displayLength;
-
 
     private void Awake() 
     {
@@ -48,7 +49,6 @@ public class Simulation : MonoBehaviour
         bul_ID = 0;
         fireRate = 0.3f;
         nextFire = fireRate;
-
         sentences = new string[Population.LIFESPAN];
         isActiveUI = false;
 
@@ -62,28 +62,31 @@ public class Simulation : MonoBehaviour
 
     private void Update() 
     {
+        // before going to the next generation, let's display the result
         if (isActiveUI) 
         {
-            if (nowSentenceNum == sentences.Length) 
+            if (isTextMove) 
             {
-                // visited all sentences, so back to shooting and go to next generation
-                isActiveUI = false;
-                return;
+                // move upward to show all text
+                TerminalTextObject.GetComponent<RectTransform>().localPosition += Vector3.up * 8f;
             }
 
             if (Time.time > beginTime + displayLength) 
             {
+                // it's time to go to next sentence
                 wholeSentence += nowSentence+"\n";
                 SetNextSentence();
             }
             else
             {
-                int displayCharNum = (int)(Mathf.Clamp01((Time.time-beginTime) / displayLength) * nowSentence.Length);
-                if (displayCharNum != lastUpdateCharNum) 
+                // here is just visiting visiting nowSentence one by one
+                int nowCharIndex = (int)(Mathf.Clamp01((Time.time-beginTime) / displayLength) * nowSentence.Length);
+                // if index has changed, show it
+                if (nowCharIndex != lastCharIndex)
                 {
-                    string partialSentence = wholeSentence + nowSentence.Substring(0, displayCharNum);
+                    string partialSentence = wholeSentence + nowSentence.Substring(0, nowCharIndex);
                     UIManager.RealWorldSimulationUI(partialSentence);
-                    lastUpdateCharNum = displayCharNum;
+                    lastCharIndex = nowCharIndex;
                 }
             }
         }
@@ -133,6 +136,7 @@ public class Simulation : MonoBehaviour
     {
         population.alternate();
         
+        // after alternation, show the result
         if (SimulationMode == MODE.RealWorldSimulation) 
         {
             Vector3[] bestChrom = population.curIndividuals[0].chrom;
@@ -143,6 +147,7 @@ public class Simulation : MonoBehaviour
                 // pass chromosome info which is fitness ranking, x, y and z as string
                 sentences[i] = $"{i+1}: {bestChrom[i].x}, {bestChrom[i].y}, {bestChrom[i].z}";
             }
+            TerminalTextObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
             wholeSentence = $"第{curGeneration}世代\n";
             nowSentenceNum = 0;
             SetNextSentence();
@@ -161,10 +166,24 @@ public class Simulation : MonoBehaviour
 
     private void SetNextSentence() 
     {
+        if (nowSentenceNum == sentences.Length) 
+        {
+            // visited all sentences, so back to shooting and go to next generation
+            isActiveUI = false;
+            isTextMove = false;
+            UIManager.RealWorldSimulationUI(wholeSentence);
+            return;
+        }
         nowSentence = sentences[nowSentenceNum];
         beginTime   = Time.time;
-        displayLength  = nowSentence.Length * charDisplayInterval;
+        displayLength = nowSentence.Length * charDisplayInterval;
         nowSentenceNum++;
-        lastUpdateCharNum = 0;
+        lastCharIndex = 0;
+
+        // when we write around 1/4 of all senteces, it is a good timing to let TerminalText go upward 
+        if (nowSentenceNum >= sentences.Length/4) 
+        {
+            isTextMove = true;
+        }
     }
 }
