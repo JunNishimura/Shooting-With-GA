@@ -5,30 +5,18 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    private float prevCurGeneration;
+
+    [Header("Simulation Scene")]
     public Text PopSizeText;
     public Text MutateProbText;
     public Text CurGenerationText;
     public Text BestFitnessText;
     public Text SurvivedCountText;
 
-    private void Awake()
-    {
-        UIUpdate();
-        prevCurGeneration = Simulation.curGeneration;
-    }
+    [Header("RealWorld Scene")]
+    public Text FitnessText;
 
-    private void Update() 
-    {
-        // an increment of curGeneration is a flag to change the UI
-        if (prevCurGeneration != Simulation.curGeneration) 
-        {
-            UIUpdate();
-            prevCurGeneration = Simulation.curGeneration;
-        }
-    }
-
-    private void UIUpdate() 
+    public void SimulationUI()
     {
         PopSizeText.text       = $">> {Simulation.BulletNum}";
         MutateProbText.text    = $">> {Population.MUTATEPROB}";
@@ -36,4 +24,9 @@ public class UIManager : MonoBehaviour
         BestFitnessText.text   = $">> {Simulation.BestFitnessEver:N5}";
         SurvivedCountText.text = $">> {Simulation.SurvivedCount}";
     }
+
+    public void RealWorldSimulationUI(string sentence) 
+    {
+        FitnessText.text = sentence;
+    }       
 }
