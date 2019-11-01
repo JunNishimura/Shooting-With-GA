@@ -22,6 +22,7 @@ public class Simulation : MonoBehaviour
 
     private Population population;
     private AudioSource audioSource;
+    private Animation anim;
     private int bul_ID;
     private float nextFire;
     private float fireRate;
@@ -29,6 +30,7 @@ public class Simulation : MonoBehaviour
     private void Awake() 
     {
         audioSource = this.GetComponent<AudioSource>();
+        anim = this.GetComponent<Animation>();
         bul_ID = 0;
         fireRate = 1f;
         nextFire = fireRate;
@@ -63,6 +65,10 @@ public class Simulation : MonoBehaviour
         {
             nextFire = Time.time + fireRate;
             
+            if (SimulationMode == MODE.RealWorldSimulation) 
+            {
+                anim.Play("GunAnimation");
+            }
             audioSource.Play();
             // instantiate bullet
             population.bulletObjects[bul_ID] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)).GetComponent<Bullet>();
