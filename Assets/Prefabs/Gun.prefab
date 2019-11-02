@@ -130,7 +130,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e80a242e9782f414ca17b519538f388c, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -230,6 +230,8 @@ MonoBehaviour:
   FirePos: {fileID: 6089535951318646540}
   Prefab: {fileID: 858902562, guid: 7eb05c3534e4d4adda5d44d4a11a4852, type: 3}
   TowerTop: {fileID: 0}
+  TerminalTextObject: {fileID: 0}
+  charDisplayInterval: 0.001
 --- !u!111 &1841843923
 Animation:
   m_ObjectHideFlags: 0

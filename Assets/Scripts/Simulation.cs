@@ -32,7 +32,7 @@ public class Simulation : MonoBehaviour
     [SerializeField][Range(0.001f, 0.3f)]
     private float charDisplayInterval = 0.05f; // interval to dispaly next character
     private bool isActiveUI; // make this true when displaying UI
-    private bool isTextMove; // TerminalTextObject has to move upward to show all texts
+    private bool isTextScrollUp; // TerminalTextObject has to move upward to show all texts
     private string[] sentences;
     private string wholeSentence;
     private string nowSentence; // one line sentence
@@ -40,6 +40,8 @@ public class Simulation : MonoBehaviour
     private int lastCharIndex; // index for nowSentence
     private float beginTime;
     private float displayLength;
+    private int fontSize;
+    private int maxLinesNumOnScreen; // maximum number of lines which the scene can display
 
     private void Awake() 
     {
@@ -51,6 +53,8 @@ public class Simulation : MonoBehaviour
         nextFire = fireRate;
         sentences = new string[Population.LIFESPAN];
         isActiveUI = false;
+        fontSize = UIManager.FitnessText.fontSize;
+        maxLinesNumOnScreen = (int)(Screen.height / fontSize);
 
         population = new Population(Vector3.Angle(Vector3.right, FirePos.transform.right));
 
@@ -65,10 +69,14 @@ public class Simulation : MonoBehaviour
         // before going to the next generation, let's display the result
         if (isActiveUI) 
         {
-            if (isTextMove) 
+            // scroll up when the text is full
+            if (isTextScrollUp) 
             {
-                // move upward to show all text
-                TerminalTextObject.GetComponent<RectTransform>().localPosition += Vector3.up * 8f;
+                // calculate how much the text should be scrolled per frame
+                float scroll = (Time.deltaTime * fontSize) / displayLength; 
+                scroll *= 1.1f; // an adjustment
+                // scroll = Mathf.Min(scroll, 10f); // not to scroll too much
+                TerminalTextObject.GetComponent<RectTransform>().localPosition += Vector3.up * scroll;
             }
 
             if (Time.time > beginTime + displayLength) 
@@ -145,7 +153,8 @@ public class Simulation : MonoBehaviour
             for (int i = 0; i < Population.LIFESPAN; i++) 
             {
                 // pass chromosome info which is fitness ranking, x, y and z as string
-                sentences[i] = $"{i+1}: {bestChrom[i].x}, {bestChrom[i].y}, {bestChrom[i].z}";
+                sentences[i] = $"<color=#ff0000>{i+1}</color>: {bestChrom[i].x}, {bestChrom[i].y}, {bestChrom[i].z}";
+                // sentences[i] = $"{i+1}: {bestChrom[i].x}, {bestChrom[i].y}, {bestChrom[i].z}";
             }
             TerminalTextObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
             wholeSentence = $"第{curGeneration}世代\n";
@@ -170,7 +179,7 @@ public class Simulation : MonoBehaviour
         {
             // visited all sentences, so back to shooting and go to next generation
             isActiveUI = false;
-            isTextMove = false;
+            isTextScrollUp = false;
             UIManager.RealWorldSimulationUI(wholeSentence);
             return;
         }
@@ -180,10 +189,10 @@ public class Simulation : MonoBehaviour
         nowSentenceNum++;
         lastCharIndex = 0;
 
-        // when we write around 1/4 of all senteces, it is a good timing to let TerminalText go upward 
-        if (nowSentenceNum >= sentences.Length/4) 
+        // When the text is full with sentences, it is time to scroll up text to display the rest
+        if (nowSentenceNum >= maxLinesNumOnScreen) 
         {
-            isTextMove = true;
+            isTextScrollUp = true;
         }
     }
 }
