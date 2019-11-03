@@ -563,7 +563,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 2
-  m_Text: Fitness
+  m_Text: Genom
 --- !u!222 &387514623
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -809,7 +809,8 @@ MonoBehaviour:
   CurGenerationText: {fileID: 0}
   BestFitnessText: {fileID: 0}
   SurvivedCountText: {fileID: 0}
-  FitnessText: {fileID: 387514622}
+  GenomText: {fileID: 387514622}
+  SelectionText: {fileID: 0}
 --- !u!1 &780166448
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,7 +990,7 @@ GameObject:
   - component: {fileID: 907050706}
   - component: {fileID: 907050705}
   m_Layer: 5
-  m_Name: Fitness
+  m_Name: Genom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1865,7 +1866,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1841843920, guid: 528bf41817fd340f09fab2d471099180, type: 3}
       propertyPath: charDisplayInterval
-      value: 0.005
+      value: 0.001
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 528bf41817fd340f09fab2d471099180, type: 3}

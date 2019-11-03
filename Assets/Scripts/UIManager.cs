@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
 
     [Header("RealWorld Scene")]
     public Text FitnessText;
+    public Text SelectionText;
 
     public void SimulationUI()
     {
@@ -25,8 +26,13 @@ public class UIManager : MonoBehaviour
         SurvivedCountText.text = $">> {Simulation.SurvivedCount}";
     }
 
-    public void RealWorldSimulationUI(string sentence) 
+    public void DisplayFitnessText(string sentence) 
     {
         FitnessText.text = sentence;
     }       
+
+    public void DisplaySelectionText(string sentence) 
+    {
+        SelectionText.text = sentence;
+    }
 }

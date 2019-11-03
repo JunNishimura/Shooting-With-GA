@@ -13,6 +13,7 @@ public class Population
     private float[] trFit; // traversed fitness. 
     private float totalTrFitness;
     private int elite = 0; 
+    private string[] sentences;
 
     public Population(float complementAngle)
     {
@@ -20,6 +21,7 @@ public class Population
         curIndividuals  = new Individual[Simulation.BulletNum];
         nextIndividuals = new Individual[Simulation.BulletNum];
         trFit = new float[Simulation.BulletNum];
+        sentences = new string[Simulation.BulletNum];
 
         for (int i = 0; i < Simulation.BulletNum; i++)
         {
@@ -29,7 +31,7 @@ public class Population
     }
 
     // alternate generation
-    public void alternate() 
+    public string[] alternate() 
     {
         // evaluate the previous generation
         Evaluate();
@@ -49,6 +51,7 @@ public class Population
             {
                 nextIndividuals[i].chrom[j] = curIndividuals[i].chrom[j];
             }
+            sentences[i] = $"{i+1}: elite\n";
         }
 
         // calculate traversed fitness for each object
@@ -73,13 +76,16 @@ public class Population
             switch (r)
             {
                 case 0:
+                    sentences[i] = $"{i+1}: parent 1 -> {i}, parent2 -> {parent}\n";
                     nextIndividuals[i].Crossover(curIndividuals[i], curIndividuals[parent]);
                     break;
                 case 1:
+                    sentences[i] = $"{i+1}: parent 1 -> {parent}, parent2 -> {i}\n";
                     nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[i]);
                     break;
                 default:
                     int anotherParent = rouletteSelection();
+                    sentences[i] = $"{i+1}: parent 1 -> {parent}, parent2 -> {anotherParent}\n";
                     nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[anotherParent]);
                     break;
             }
@@ -102,6 +108,8 @@ public class Population
         {
             bulletObjects[i].DestroyMyself();
         }
+
+        return sentences;
     }
 
     // roulette selection
@@ -136,13 +144,9 @@ public class Population
         return rank-1;
     }
 
-    // Evaluate the trial for the previous generation
+    // Evaluate the current generation and return best chrom
     private void Evaluate()
     {
-        for (int i = 0; i < Simulation.BulletNum; i++) 
-        {
-            curIndividuals[i].fitness = bulletObjects[i].calculateFitness();
-        }
         // sort curIndividuals based on the fitness calculated above
         quickSort(0, Simulation.BulletNum-1);
         float currentBestFitness = this.curIndividuals[0].fitness;
