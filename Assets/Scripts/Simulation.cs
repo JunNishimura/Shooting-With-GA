@@ -24,8 +24,8 @@ public class Simulation : MonoBehaviour
     private Population population;
     private AudioSource audioSource;
     private Animation anim;
-    private int bulletID; // bulletID follows the number of bullets fired
-    private int stoppedID; // stoppedID follows the number of bullets which stopped running
+    private int bornCount; // bornCount follows the number of bullets fired
+    private int deadCount; // deadCount follows the number of bullets which stopped running
     private float nextFire;
     [SerializeField][Range(0.1f, 0.5f)] private float fireRate = 0.25f;
 
@@ -88,7 +88,7 @@ public class Simulation : MonoBehaviour
                 isActiveUI = false;
 
                 // time to evolve if we reach the bulletNum
-                if (stoppedID == BulletNum)
+                if (deadCount == BulletNum)
                 {
                     Evolution();
                 }
@@ -109,18 +109,18 @@ public class Simulation : MonoBehaviour
         else 
         {
             // when current bullet stops running, fire the next one
-            if (population.bulletObjects[stoppedID].isStopRunning) 
+            if (population.bulletObjects[deadCount].isStopRunning) 
             {
                 // calculate fitness and display on the screen
-                population.curIndividuals[stoppedID].fitness = population.bulletObjects[stoppedID].calculateFitness();
-                sentences[stoppedID] = $"{stoppedID+1}: {population.curIndividuals[stoppedID].fitness}";
-                SetNextSentence(stoppedID);
-                stoppedID++;
+                population.curIndividuals[deadCount].fitness = population.bulletObjects[deadCount].calculateFitness();
+                sentences[deadCount] = $"{deadCount+1}: {population.curIndividuals[deadCount].fitness}";
+                SetNextSentence(deadCount);
+                deadCount++;
                 isActiveUI = true;
             }
         }
         
-        if (Time.time > nextFire && bulletID < BulletNum)
+        if (Time.time > nextFire && bornCount < BulletNum)
         {
             nextFire  = Time.time + fireRate;
             Fire();
@@ -150,7 +150,7 @@ public class Simulation : MonoBehaviour
     {
         // make the tower head toward the direction to fire
         // tower rotation on y axis
-        Vector3 fireDirection = population.curIndividuals[bulletID-1].chrom[0];
+        Vector3 fireDirection = population.curIndividuals[bornCount-1].chrom[0];
         Quaternion towerHeading = Quaternion.LookRotation(fireDirection);
         towerHeading.x = 0f;
         towerHeading.z = 0f;
@@ -168,25 +168,25 @@ public class Simulation : MonoBehaviour
         FitnessTextObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
         wholeSentence = $"第{curGeneration}世代\n";
         UIManager.DisplayFitnessText(wholeSentence);
-        stoppedID = 0;
-        bulletID = 0;
+        deadCount = 0;
+        bornCount = 0;
         Fire();
     }
 
     private void Fire() 
     {
-        ++bulletID;
+        ++bornCount;
         if (SimulationMode == MODE.RealWorldSimulation)
         {
             anim.Play("GunAnimation");
         }
         audioSource.Play();
 
-        Vector3[] nowBulletGenom = population.curIndividuals[bulletID-1].chrom;
+        Vector3[] nowBulletGenom = population.curIndividuals[bornCount-1].chrom;
         // instantiate bullet
-        population.bulletObjects[bulletID-1] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)).GetComponent<Bullet>();
+        population.bulletObjects[bornCount-1] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)).GetComponent<Bullet>();
         // pass the path which this bullet will follow
-        population.bulletObjects[bulletID-1].Fire(nowBulletGenom, bulletID);
+        population.bulletObjects[bornCount-1].Fire(nowBulletGenom, bornCount);
     }
 
     private void SetNextSentence(int nowSentenceNum) 
