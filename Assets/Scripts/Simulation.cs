@@ -12,7 +12,7 @@ public class Simulation : MonoBehaviour
     public MODE SimulationMode;
 
     public static int curGeneration = 1;
-    public static int BulletNum = 10;
+    public static int BulletNum = 30;
     public static int SurvivedCount = 0;
     public static float BestFitnessEver = Mathf.Infinity;
     public GameObject FirePos;
@@ -24,17 +24,18 @@ public class Simulation : MonoBehaviour
     private Population population;
     private AudioSource audioSource;
     private Animation anim;
-    private int bul_ID;
+    private int bulletID; // bulletID follows the number of bullets fired
+    private int stoppedID; // stoppedID follows the number of bullets which stopped running
+    private float nextFire;
+    [SerializeField][Range(0.1f, 0.5f)] private float fireRate = 0.25f;
 
-    // variables for character animation
-    [SerializeField][Range(0.001f, 0.3f)]
-    private float charDisplayInterval = 0.05f; // interval to dispaly next character
+    //----- variables for character animation -----//
+    [SerializeField][Range(0.001f, 0.3f)] private float charDisplayInterval = 0.05f; // interval to dispaly next character
     private bool isActiveUI; // make this true when displaying UI
     private bool isTextScrollUp; // FitnessTextObject has to move upward to show all texts
     private string[] sentences;
     private string wholeSentence;
     private string nowSentence; // one line sentence
-    private int nowSentenceNum; // index for sentences
     private int lastCharIndex; // index for nowSentence
     private float beginTime;
     private float displayLength;
@@ -46,7 +47,7 @@ public class Simulation : MonoBehaviour
         audioSource = this.GetComponent<AudioSource>();
         anim = this.GetComponent<Animation>();
         UIManager = GameObject.Find("Canvas").GetComponent<UIManager>();
-        bul_ID = -1;
+        nextFire = fireRate;
         sentences = new string[BulletNum];
         isActiveUI = false;
 
@@ -63,9 +64,7 @@ public class Simulation : MonoBehaviour
         }
 
         // shoot the first bullet
-        wholeSentence = $"第{curGeneration}世代 fitness\n";
-        nowSentenceNum = 0;
-        Fire();
+        InitFire();
     }
 
     private void Update() 
@@ -88,14 +87,10 @@ public class Simulation : MonoBehaviour
                 UIManager.DisplayFitnessText(wholeSentence);
                 isActiveUI = false;
 
-                // time to evolve if we reach the bulletNum, otherwise go on next firing.
-                if (bul_ID == BulletNum-1)
+                // time to evolve if we reach the bulletNum
+                if (stoppedID == BulletNum)
                 {
                     Evolution();
-                }
-                else 
-                {
-                    Fire();
                 }
             }
             else
@@ -114,15 +109,21 @@ public class Simulation : MonoBehaviour
         else 
         {
             // when current bullet stops running, fire the next one
-            if (population.bulletObjects[bul_ID].isStopRunning) 
+            if (population.bulletObjects[stoppedID].isStopRunning) 
             {
                 // calculate fitness and display on the screen
-                population.curIndividuals[bul_ID].fitness = population.bulletObjects[bul_ID].calculateFitness();
-                sentences[bul_ID] = $"{bul_ID+1}: {population.curIndividuals[bul_ID].fitness}";
-                SetNextSentence();
-
+                population.curIndividuals[stoppedID].fitness = population.bulletObjects[stoppedID].calculateFitness();
+                sentences[stoppedID] = $"{stoppedID+1}: {population.curIndividuals[stoppedID].fitness}";
+                SetNextSentence(stoppedID);
+                stoppedID++;
                 isActiveUI = true;
             }
+        }
+        
+        if (Time.time > nextFire && bulletID < BulletNum)
+        {
+            nextFire  = Time.time + fireRate;
+            Fire();
         }
     }
 
@@ -131,10 +132,6 @@ public class Simulation : MonoBehaviour
         // selectionSentences = population.alternate();
         // population
         population.alternate();
-
-        FitnessTextObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        wholeSentence = $"第{curGeneration}世代\n";
-        nowSentenceNum = 0;
         
         // finish if we reach the maximum generation count
         if (++curGeneration >= Population.GENMAX) 
@@ -145,8 +142,7 @@ public class Simulation : MonoBehaviour
         else 
         {
             // start next generation
-            bul_ID = -1;
-            Fire();
+            InitFire();
         }
     }
 
@@ -154,7 +150,7 @@ public class Simulation : MonoBehaviour
     {
         // make the tower head toward the direction to fire
         // tower rotation on y axis
-        Vector3 fireDirection = population.curIndividuals[bul_ID].chrom[0];
+        Vector3 fireDirection = population.curIndividuals[bulletID-1].chrom[0];
         Quaternion towerHeading = Quaternion.LookRotation(fireDirection);
         towerHeading.x = 0f;
         towerHeading.z = 0f;
@@ -166,23 +162,34 @@ public class Simulation : MonoBehaviour
         TowerTop.transform.rotation = Quaternion.Lerp(TowerTop.transform.rotation, towerTopHeading, 1 - (nextFire-Time.time));
     }
 
+    
+    private void InitFire() 
+    {
+        FitnessTextObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        wholeSentence = $"第{curGeneration}世代\n";
+        UIManager.DisplayFitnessText(wholeSentence);
+        stoppedID = 0;
+        bulletID = 0;
+        Fire();
+    }
+
     private void Fire() 
     {
-        ++bul_ID;
+        ++bulletID;
         if (SimulationMode == MODE.RealWorldSimulation)
         {
             anim.Play("GunAnimation");
         }
         audioSource.Play();
 
-        Vector3[] nowBulletGenom = population.curIndividuals[bul_ID].chrom;
+        Vector3[] nowBulletGenom = population.curIndividuals[bulletID-1].chrom;
         // instantiate bullet
-        population.bulletObjects[bul_ID] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)).GetComponent<Bullet>();
+        population.bulletObjects[bulletID-1] = Instantiate(Prefab, FirePos.transform.position, Quaternion.Euler(-10f, 0f, 0f)).GetComponent<Bullet>();
         // pass the path which this bullet will follow
-        population.bulletObjects[bul_ID].Fire(nowBulletGenom, bul_ID);
+        population.bulletObjects[bulletID-1].Fire(nowBulletGenom, bulletID);
     }
 
-    private void SetNextSentence() 
+    private void SetNextSentence(int nowSentenceNum) 
     {
         if (nowSentenceNum == sentences.Length)
         {
@@ -194,7 +201,6 @@ public class Simulation : MonoBehaviour
         nowSentence = sentences[nowSentenceNum];
         beginTime   = Time.time;
         displayLength = nowSentence.Length * charDisplayInterval;
-        nowSentenceNum++;
         lastCharIndex = 0;
 
         // When the text is full with sentences, it is time to scroll up text to display the rest

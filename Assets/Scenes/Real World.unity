@@ -809,7 +809,7 @@ MonoBehaviour:
   CurGenerationText: {fileID: 0}
   BestFitnessText: {fileID: 0}
   SurvivedCountText: {fileID: 0}
-  GenomText: {fileID: 387514622}
+  FitnessText: {fileID: 387514622}
   SelectionText: {fileID: 0}
 --- !u!1 &780166448
 GameObject:
@@ -990,7 +990,7 @@ GameObject:
   - component: {fileID: 907050706}
   - component: {fileID: 907050705}
   m_Layer: 5
-  m_Name: Genom
+  m_Name: Fitness
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1866,8 +1866,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1841843920, guid: 528bf41817fd340f09fab2d471099180, type: 3}
       propertyPath: charDisplayInterval
-      value: 0.001
+      value: 0.015
       objectReference: {fileID: 0}
+    - target: {fileID: 1841843920, guid: 528bf41817fd340f09fab2d471099180, type: 3}
+      propertyPath: FitnessTextObject
+      value: 
+      objectReference: {fileID: 387514620}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 528bf41817fd340f09fab2d471099180, type: 3}
 --- !u!1001 &7171941010276184673
