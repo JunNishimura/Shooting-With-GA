@@ -71,18 +71,24 @@ public class Simulation : MonoBehaviour
 
     private void Evolution()
     {
-        population.alternate();
-        
-        // finish if we reach the maximum generation count
-        if (++curGeneration >= Population.GENMAX) 
+        if (! realWorldUI.isSelectionMode) 
         {
-            Debug.Log("Finish Evolution");
-            Application.Quit();
+            string[] sentences = population.alternate();
+            realWorldUI.SetSelectionSentences(sentences);
         }
         else 
         {
-            // start next generation
-            InitFire();
+            // finish if we reach the maximum generation count
+            if (++curGeneration >= Population.GENMAX) 
+            {
+                Debug.Log("Finish Evolution");
+                Application.Quit();
+            }
+            else 
+            {
+                // start next generation
+                InitFire();
+            }
         }
     }
 

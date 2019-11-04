@@ -42,7 +42,7 @@ public class Population
         {
             if (bulletObjects[i].isReachedTarget) Simulation.SurvivedCount++;
         }
-        elite = Mathf.Max(elite+Simulation.SurvivedCount, 5); // maximum number of elites is 5
+        elite = Mathf.Min(elite+Simulation.SurvivedCount, 5); // maximum number of elites is 5
         
         // keep elites for the next generation
         for (int i = 0; i < elite; i++)
@@ -51,7 +51,7 @@ public class Population
             {
                 nextIndividuals[i].chrom[j] = curIndividuals[i].chrom[j];
             }
-            sentences[i] = $"{i+1}: elite\n";
+            sentences[i] = $"{i+1}: elite";
         }
 
         // calculate traversed fitness for each object
@@ -76,16 +76,16 @@ public class Population
             switch (r)
             {
                 case 0:
-                    sentences[i] = $"{i+1}: parent 1 -> {i}, parent2 -> {parent}\n";
+                    sentences[i] = $"child{i+1}: parent1 -> {i}, parent2 -> {parent}";
                     nextIndividuals[i].Crossover(curIndividuals[i], curIndividuals[parent]);
                     break;
                 case 1:
-                    sentences[i] = $"{i+1}: parent 1 -> {parent}, parent2 -> {i}\n";
+                    sentences[i] = $"child{i+1}: parent1 -> {parent}, parent2 -> {i}";
                     nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[i]);
                     break;
                 default:
                     int anotherParent = rouletteSelection();
-                    sentences[i] = $"{i+1}: parent 1 -> {parent}, parent2 -> {anotherParent}\n";
+                    sentences[i] = $"child{i+1}: parent1 -> {parent}, parent2 -> {anotherParent}";
                     nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[anotherParent]);
                     break;
             }

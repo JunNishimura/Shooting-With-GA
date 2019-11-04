@@ -7,10 +7,12 @@ public class RealWorldUI : MonoBehaviour
 {
     public Text TerminalText;
     public GameObject textObject;
+    public bool isSelectionMode { get; private set; }
     public int displayedIndex { get; private set; } // the last index of array(fitnessSentences) which was displayed
 
     [SerializeField][Range(0.001f, 0.3f)] private float charDisplayInterval = 0.05f; // interval to dispaly next character
     private string[] fitnessSentences;
+    private string[] selectionSentences;
     private string wholeSentence;
     private string nowSentence;
     private int setIndex; // the last index of array(fitnessSentences) which was set
@@ -51,7 +53,8 @@ public class RealWorldUI : MonoBehaviour
                 // Go on next sentence if it's already set. If not, just wait next set.
                 if (displayedIndex < setIndex) 
                 {
-                    SetNextSentence(fitnessSentences, displayedIndex+1);
+                    if (isSelectionMode) SetNextSentence(selectionSentences, displayedIndex+1);
+                    else SetNextSentence(fitnessSentences, displayedIndex+1);
                 }
                 else 
                 {
@@ -91,6 +94,15 @@ public class RealWorldUI : MonoBehaviour
         }
     }
 
+    public void SetSelectionSentences(string[] sentences) 
+    {
+        this.selectionSentences = sentences;
+
+        InitSetting(-1, this.setIndex, "Selection\n");
+        isSelectionMode = true;
+        SetNextSentence(selectionSentences, displayedIndex+1);
+    }
+
     private void SetNextSentence(string[] sentences, int index) 
     {
         nowSentence = sentences[index];
@@ -109,6 +121,7 @@ public class RealWorldUI : MonoBehaviour
     public void InitSetting(int d_index, int s_index, string initialMessage) 
     {
         textObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        isSelectionMode = false;
         isTextScrollUp  = false;
         isWriting       = false;
         displayedIndex  = d_index;
