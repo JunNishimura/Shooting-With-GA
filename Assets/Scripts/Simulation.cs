@@ -69,7 +69,7 @@ public class Simulation : MonoBehaviour
         }
     }
 
-    private void Evolution() 
+    private void Evolution()
     {
         population.alternate();
         
@@ -105,7 +105,7 @@ public class Simulation : MonoBehaviour
     // initial fire is special because there are some required settings.
     private void InitFire() 
     {
-        realWorldUI.InitSetting();
+        realWorldUI.InitSetting(-1, -1, $"Genration {Simulation.curGeneration}\n");
         deadCount = 0;
         bornCount = 0;
         Fire();

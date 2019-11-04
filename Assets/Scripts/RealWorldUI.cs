@@ -7,13 +7,12 @@ public class RealWorldUI : MonoBehaviour
 {
     public Text TerminalText;
     public GameObject textObject;
+    public int displayedIndex { get; private set; } // the last index of array(fitnessSentences) which was displayed
 
-    // interval to dispaly next character
-    [SerializeField][Range(0.001f, 0.3f)] private float charDisplayInterval = 0.05f; 
+    [SerializeField][Range(0.001f, 0.3f)] private float charDisplayInterval = 0.05f; // interval to dispaly next character
     private string[] fitnessSentences;
     private string wholeSentence;
     private string nowSentence;
-    public int displayedIndex { get; private set; } // the last index of array(fitnessSentences) which was displayed
     private int setIndex; // the last index of array(fitnessSentences) which was set
     private float beginTime;
     private float displayLength;
@@ -86,7 +85,7 @@ public class RealWorldUI : MonoBehaviour
         this.setIndex = index;
         this.fitnessSentences[setIndex] = sentence;
         // if not writing now, let's write.
-        if (! isWriting) 
+        if (! isWriting)
         {
             SetNextSentence(fitnessSentences, displayedIndex+1);
         }
@@ -104,17 +103,17 @@ public class RealWorldUI : MonoBehaviour
         if (displayedIndex >= maxLinesNumOnScreen) 
         {
             isTextScrollUp = true;
-        } 
+        }
     }
 
-    public void InitSetting() 
+    public void InitSetting(int d_index, int s_index, string initialMessage) 
     {
         textObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        isTextScrollUp = false;
-        isWriting = false;
-        displayedIndex = -1;
-        setIndex   = -1;
-        wholeSentence = $"Genration {Simulation.curGeneration}\n";
+        isTextScrollUp  = false;
+        isWriting       = false;
+        displayedIndex  = d_index;
+        setIndex        = s_index;
+        wholeSentence   = initialMessage;
         DisplayTerminalText(wholeSentence);
     }
 }
