@@ -13,8 +13,8 @@ public class RealWorldUI : MonoBehaviour
     private string[] fitnessSentences;
     private string wholeSentence;
     private string nowSentence;
-    public int writingNum { get; private set; }
-    private int setNum;
+    public int displayedIndex { get; private set; } // the last index of array(fitnessSentences) which was displayed
+    private int setIndex; // the last index of array(fitnessSentences) which was set
     private float beginTime;
     private float displayLength;
     private int lastCharIndex;
@@ -32,7 +32,7 @@ public class RealWorldUI : MonoBehaviour
 
     private void Update() 
     {
-        if (isWriting && writingNum < setNum) 
+        if (isWriting && displayedIndex < setIndex) 
         {
             // scroll up when the text is full on the screen
             if (isTextScrollUp) 
@@ -47,11 +47,12 @@ public class RealWorldUI : MonoBehaviour
             {
                 wholeSentence += nowSentence + "\n";
                 DisplayTerminalText(wholeSentence);
-                writingNum++;
+                displayedIndex++;
 
-                if (writingNum < setNum) 
+                // Go on next sentence if it's already set. If not, just wait next set.
+                if (displayedIndex < setIndex) 
                 {
-                    SetNextSentence(fitnessSentences, writingNum+1);
+                    SetNextSentence(fitnessSentences, displayedIndex+1);
                 }
                 else 
                 {
@@ -78,13 +79,16 @@ public class RealWorldUI : MonoBehaviour
         TerminalText.text = sentence;
     }
 
+    // set fitness from Simulation.cs 
+    // this is called when the bullet stops moving and calculates its fitness
     public void SetFitnessSentences(int index, string sentence) 
     {
-        this.setNum = index;
-        this.fitnessSentences[setNum] = sentence;
+        this.setIndex = index;
+        this.fitnessSentences[setIndex] = sentence;
+        // if not writing now, let's write.
         if (! isWriting) 
         {
-            SetNextSentence(fitnessSentences, writingNum+1);
+            SetNextSentence(fitnessSentences, displayedIndex+1);
         }
     }
 
@@ -97,7 +101,7 @@ public class RealWorldUI : MonoBehaviour
         isWriting = true;
 
         // When the text is full with sentences, it is time to scroll up text to display the rest
-        if (writingNum >= maxLinesNumOnScreen) 
+        if (displayedIndex >= maxLinesNumOnScreen) 
         {
             isTextScrollUp = true;
         } 
@@ -108,9 +112,9 @@ public class RealWorldUI : MonoBehaviour
         textObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
         isTextScrollUp = false;
         isWriting = false;
-        writingNum = -1;
-        setNum   = -1;
-        wholeSentence = $"第{Simulation.curGeneration}世代\n";
+        displayedIndex = -1;
+        setIndex   = -1;
+        wholeSentence = $"Genration {Simulation.curGeneration}\n";
         DisplayTerminalText(wholeSentence);
     }
 }

@@ -44,7 +44,7 @@ public class Simulation : MonoBehaviour
 
     private void Update() 
     {
-        if (realWorldUI.writingNum == BulletNum-1)
+        if (realWorldUI.displayedIndex == BulletNum-1)
         {
             Evolution();
         }
@@ -102,6 +102,7 @@ public class Simulation : MonoBehaviour
         TowerTop.transform.rotation = Quaternion.Lerp(TowerTop.transform.rotation, towerTopHeading, 1 - (nextFire-Time.time));
     }
 
+    // initial fire is special because there are some required settings.
     private void InitFire() 
     {
         realWorldUI.InitSetting();
