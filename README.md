@@ -2,7 +2,7 @@
 shooting simulation with genetic algorithm
 
 ## Show case
-![](./Images/img01.png)
+![](./Movies/movie.mp4)
 
 ## Description
 This simulation tries to solve the better path to reach the target with gentic algorithm.
