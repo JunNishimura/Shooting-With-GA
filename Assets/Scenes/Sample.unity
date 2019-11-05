@@ -277,6 +277,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &173286771 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 196596, guid: f4f6b630159e6b34386dec2579f250b2,
+    type: 3}
+  m_PrefabInstance: {fileID: 270277838}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &220240858
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -398,7 +404,8 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2062090974, guid: f4f6b630159e6b34386dec2579f250b2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f4f6b630159e6b34386dec2579f250b2, type: 3}
 --- !u!1 &297104597
 GameObject:
@@ -561,6 +568,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &377651613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377651611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cb699cad94fa425ea3a8ad2359a0bee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FirePos: {fileID: 861221989}
+  Prefab: {fileID: 858902562, guid: 64a78e56aa9ed45f4ad1cb36e68c1406, type: 3}
+  fireRate: 0.39
+  TowerTop: {fileID: 173286771}
 --- !u!111 &377651615
 Animation:
   m_ObjectHideFlags: 0
@@ -1186,6 +1209,12 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: '>> 0'
+--- !u!1 &861221989 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 799347554, guid: f4f6b630159e6b34386dec2579f250b2,
+    type: 3}
+  m_PrefabInstance: {fileID: 270277838}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &895247447
 GameObject:
   m_ObjectHideFlags: 0
@@ -2019,14 +2048,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1510677863}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38afed4a0ae38466591bfed5317d5255, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f4542dd5124147ffb7038be3c3c11ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PopSizeText: {fileID: 831523143}
   MutateProbText: {fileID: 1014481919}
   CurGenerationText: {fileID: 529849112}
   BestFitnessText: {fileID: 1851489419}
-  SurvivedCountText: {fileID: 1787922336}
+  ReachTargetCountText: {fileID: 1787922336}
 --- !u!1 &1627815111
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public bool isReachedTarget { get; private set;}
+    public bool isStopRunning { get; private set; }
     private AudioSource audioSource;
     private Rigidbody rb;
     private Vector3[] path;
@@ -17,7 +18,6 @@ public class Bullet : MonoBehaviour
     private int nowLife;
     private float speed;
     private float y_diff;
-    private bool isStopRunning;
 
     private void Awake()
     {

@@ -13,6 +13,7 @@ public class Population
     private float[] trFit; // traversed fitness. 
     private float totalTrFitness;
     private int elite = 0; 
+    private string[] sentences;
 
     public Population(float complementAngle)
     {
@@ -20,6 +21,7 @@ public class Population
         curIndividuals  = new Individual[Simulation.BulletNum];
         nextIndividuals = new Individual[Simulation.BulletNum];
         trFit = new float[Simulation.BulletNum];
+        sentences = new string[Simulation.BulletNum];
 
         for (int i = 0; i < Simulation.BulletNum; i++)
         {
@@ -29,18 +31,18 @@ public class Population
     }
 
     // alternate generation
-    public void alternate() 
+    public string[] alternate() 
     {
         // evaluate the previous generation
         Evaluate();
 
         elite = 2; // minimum number of elites is 2
-        Simulation.SurvivedCount = 0;
+        Simulation.reachTargetCount = 0;
         for (int i = 0; i < Simulation.BulletNum; i++) 
         {
-            if (bulletObjects[i].isReachedTarget) Simulation.SurvivedCount++;
+            if (bulletObjects[i].isReachedTarget) Simulation.reachTargetCount++;
         }
-        elite = Mathf.Max(elite+Simulation.SurvivedCount, 5); // maximum number of elites is 5
+        elite = Mathf.Min(elite+Simulation.reachTargetCount, 5); // maximum number of elites is 5
         
         // keep elites for the next generation
         for (int i = 0; i < elite; i++)
@@ -49,6 +51,7 @@ public class Population
             {
                 nextIndividuals[i].chrom[j] = curIndividuals[i].chrom[j];
             }
+            sentences[i] = $"{i+1}: elite";
         }
 
         // calculate traversed fitness for each object
@@ -73,20 +76,23 @@ public class Population
             switch (r)
             {
                 case 0:
+                    sentences[i] = $"child{i+1}: parent1 -> {i}, parent2 -> {parent}";
                     nextIndividuals[i].Crossover(curIndividuals[i], curIndividuals[parent]);
                     break;
                 case 1:
+                    sentences[i] = $"child{i+1}: parent1 -> {parent}, parent2 -> {i}";
                     nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[i]);
                     break;
                 default:
                     int anotherParent = rouletteSelection();
+                    sentences[i] = $"child{i+1}: parent1 -> {parent}, parent2 -> {anotherParent}";
                     nextIndividuals[i].Crossover(curIndividuals[parent], curIndividuals[anotherParent]);
                     break;
             }
         }
 
         // mutation
-        for (int i = Simulation.SurvivedCount; i < Simulation.BulletNum; i++) 
+        for (int i = Simulation.reachTargetCount; i < Simulation.BulletNum; i++) 
         {
             nextIndividuals[i].Mutate();
         }
@@ -102,6 +108,8 @@ public class Population
         {
             bulletObjects[i].DestroyMyself();
         }
+
+        return sentences;
     }
 
     // roulette selection
@@ -136,13 +144,9 @@ public class Population
         return rank-1;
     }
 
-    // Evaluate the trial for the previous generation
+    // Evaluate the current generation and return best chrom
     private void Evaluate()
     {
-        for (int i = 0; i < Simulation.BulletNum; i++) 
-        {
-            curIndividuals[i].fitness = bulletObjects[i].calculateFitness();
-        }
         // sort curIndividuals based on the fitness calculated above
         quickSort(0, Simulation.BulletNum-1);
         float currentBestFitness = this.curIndividuals[0].fitness;
