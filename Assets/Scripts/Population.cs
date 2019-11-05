@@ -37,12 +37,12 @@ public class Population
         Evaluate();
 
         elite = 2; // minimum number of elites is 2
-        Simulation.SurvivedCount = 0;
+        Simulation.reachTargetCount = 0;
         for (int i = 0; i < Simulation.BulletNum; i++) 
         {
-            if (bulletObjects[i].isReachedTarget) Simulation.SurvivedCount++;
+            if (bulletObjects[i].isReachedTarget) Simulation.reachTargetCount++;
         }
-        elite = Mathf.Min(elite+Simulation.SurvivedCount, 5); // maximum number of elites is 5
+        elite = Mathf.Min(elite+Simulation.reachTargetCount, 5); // maximum number of elites is 5
         
         // keep elites for the next generation
         for (int i = 0; i < elite; i++)
@@ -92,7 +92,7 @@ public class Population
         }
 
         // mutation
-        for (int i = Simulation.SurvivedCount; i < Simulation.BulletNum; i++) 
+        for (int i = Simulation.reachTargetCount; i < Simulation.BulletNum; i++) 
         {
             nextIndividuals[i].Mutate();
         }
